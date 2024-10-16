@@ -6,8 +6,6 @@ import { calculateStatCount } from '@/lib/utils'
 import { DataTable } from '@/components/table/DataTable'
 import { columns } from '@/components/table/columns'
 
-export const revalidate = 0
-
 const Admin = async () => {
 	const appointmentsList = await getAppointments()
 	const statCounts = calculateStatCount(appointmentsList.documents)
