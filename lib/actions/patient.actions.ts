@@ -26,6 +26,8 @@ export const createUser = async (user: CreateUserParams) => {
 
 		return parseStringify(newUser)
 	} catch (error: any) {
+		console.log(error)
+
 		if (error && error.code === 409) {
 			const documents = await users.list([Query.equal('email', user.email)])
 

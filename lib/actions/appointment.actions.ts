@@ -90,8 +90,6 @@ export const updateAppointment = async ({
 }
 
 export const sendSMSNotification = async (userId: string, content: string) => {
-	console.log(userId)
-
 	try {
 		const message = await messaging.createSms(
 			ID.unique(),

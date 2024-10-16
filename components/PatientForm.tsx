@@ -343,7 +343,7 @@ const PatientForm = ({ user }: { user: User }) => {
 					/>
 					<CustomFormField
 						control={form.control}
-						name='privacyConsent'
+						name='privacy'
 						label='I acknowledge that I have reviewed and agree to the privacy policy'
 						fieldType={FormFieldTypes.CHECKBOX}
 					/>
