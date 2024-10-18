@@ -1,7 +1,8 @@
 'use server'
 
-import { ID, Query } from 'node-appwrite'
+import {Account, Client, ID, Query} from 'node-appwrite'
 import {
+	accounts,
 	APPWRITE_PROJECT_ID,
 	BUCKET_ID,
 	DATABASE_ID,
@@ -13,26 +14,24 @@ import {
 } from '../appwrite.config'
 import { parseStringify } from '../utils'
 import { InputFile } from 'node-appwrite/file'
+import {cookies} from "next/headers";
 
-export const createUser = async (user: CreateUserParams) => {
+export const createAccount = async (user: CreateAccountParams) => {
 	try {
-		const newUser = await users.create(
-			ID.unique(),
-			user.email,
-			user.phone,
-			undefined,
-			user.name
-		)
+		const {email, name, password} = user
+		const newAccount = await accounts.create(ID.unique(), email, password, name)
+		const session = await accounts.createEmailPasswordSession(email, password)
 
-		return parseStringify(newUser)
+		cookies().set('user-session', session.secret, {
+			path: '/',
+			httpOnly: true,
+			sameSite: 'strict',
+			secure: true,
+		})
+
+		return parseStringify({ account: newAccount })
 	} catch (error: any) {
-		console.log(error)
-
-		if (error && error.code === 409) {
-			const documents = await users.list([Query.equal('email', user.email)])
-
-			return documents.users[0]
-		}
+		return parseStringify({ error: error.message || 'Something went wrong' })
 	}
 }
 
@@ -91,5 +90,59 @@ export const getPatient = async (userId: string) => {
 		return parseStringify(patient)
 	} catch (error: any) {
 		console.log(error)
+	}
+}
+
+export const getPatientByUserId = async (userId: string) => {
+	try {
+		const res = await databases.listDocuments(
+			DATABASE_ID!,
+			PATIENT_COLLECTION_ID!,
+			[Query.startsWith('userId', userId)]
+		)
+		if (res.documents.length === 0) return parseStringify({ patient: null })
+
+		return parseStringify({ patient: res.documents[0] })
+	} catch (error: any) {
+		return { error: error.message }
+	}
+}
+
+export const loginUser = async (email: string, password: string) => {
+	try {
+		const session = await accounts.createEmailPasswordSession(email, password)
+
+		cookies().set('user-session', session.secret, {
+			path: '/',
+			httpOnly: true,
+			sameSite: 'strict',
+			secure: true,
+		})
+
+		return parseStringify({ error: null })
+	} catch (e: any) {
+		return parseStringify({ error: e.message || 'Something went wrong' })
+	}
+}
+
+export const getLoggedInUser = async () => {
+	const client = new Client()
+		.setEndpoint(ENDPOINT!)
+		.setProject(APPWRITE_PROJECT_ID!)
+
+	try {
+		const session = cookies().get('user-session')
+		if (!session || !session.value) {
+			throw new Error('No session')
+		}
+
+		client.setSession(session.value)
+
+		const account = new Account(client)
+		const user = await account.get()
+
+		return parseStringify({ user })
+	} catch (error: any) {
+		return { error: error.message }
 	}
 }

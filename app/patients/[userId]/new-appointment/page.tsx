@@ -1,13 +1,21 @@
 import AppointmentForm from '@/components/AppointmentForm'
-import { getPatient } from '@/lib/actions/patient.actions'
+import {getPatientByUserId} from '@/lib/actions/patient.actions'
 import Image from 'next/image'
+import {NoPatientDetailsAlert} from "@/components/no-patient-details-alert";
+import Link from "next/link";
+import PasskeyModal from "@/components/PasskeyModal";
 
-const NewAppointment = async ({ params: { userId } }: SearchParamProps) => {
-	const patient = await getPatient(userId)
+const NewAppointment = async ({ searchParams, params: { userId } }: SearchParamProps) => {
+	const isAdmin = searchParams.admin === 'true'
+	const { patient } = await getPatientByUserId(userId)
 
-	return (
-		<main className='flex max-h-screen h-screen'>
-			<div className='container my-auto h-[90%]'>
+	if (!patient) return <main className='flex max-h-screen h-screen'>
+		<div className='container my-auto h-[90%]'><NoPatientDetailsAlert id={userId}/></div></main>
+
+			return (
+			<main className='flex max-h-screen h-screen'>
+				<div className='container my-auto h-[90%]'>
+				{isAdmin && <PasskeyModal/>}
 				<section className='sub-container max-w-xl justify-between h-full'>
 					<Image
 						src={'/assets/icons/logo-full.svg'}
@@ -26,6 +34,9 @@ const NewAppointment = async ({ params: { userId } }: SearchParamProps) => {
 						<p className='copyright'>
 							&copy;carepulse {new Date().getFullYear()}
 						</p>
+						<Link href={'?admin=true'} className='text-green-500'>
+							Admin
+						</Link>
 					</div>
 				</section>
 			</div>

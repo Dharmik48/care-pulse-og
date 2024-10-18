@@ -33,7 +33,6 @@ const PatientForm = ({ user }: { user: User }) => {
 			...PatientFormDefaultValues,
 			name: user.name || '',
 			email: user.email || '',
-			phone: user.phone || '',
 		},
 	})
 
@@ -69,7 +68,7 @@ const PatientForm = ({ user }: { user: User }) => {
 			const patient = await registerUser(data)
 
 			// redirect on success
-			if (patient) router.push(`/patients/${patient.$id}/new-appointment`)
+			if (patient) router.push(`/patients/${user.$id}/new-appointment`)
 		} catch (error) {
 			console.log(error)
 		}

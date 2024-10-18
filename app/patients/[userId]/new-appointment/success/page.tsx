@@ -18,7 +18,6 @@ const Success = async ({ searchParams, params }: SearchParamProps) => {
 		return redirect(`/patients/${params.userId}/new-appointment`)
 
 	const doctor = Doctors.find(doc => doc.name === appointment.primaryPhysician)
-	const user = await getUser(params.userId)
 
 	return (
 		<main className='flex max-h-screen h-screen px-4'>

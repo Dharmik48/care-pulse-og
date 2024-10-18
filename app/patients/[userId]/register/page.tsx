@@ -1,9 +1,14 @@
 import PatientForm from '@/components/PatientForm'
-import { getUser } from '@/lib/actions/patient.actions'
+import {getPatientByUserId, getUser} from '@/lib/actions/patient.actions'
 import Image from 'next/image'
 import Link from 'next/link'
+import {redirect} from "next/navigation";
 
 const Register = async ({ params: { userId } }: SearchParamProps) => {
+	const patient = await getPatientByUserId(userId)
+
+	if(patient) return redirect(`/patients/${userId}/new-appointment`)
+
 	const user = await getUser(userId)
 
 	return (
@@ -17,10 +22,15 @@ const Register = async ({ params: { userId } }: SearchParamProps) => {
 						className='mb-12 h-10 w-max'
 						alt='Care pulse logo'
 					/>
-					<PatientForm user={user} />
-					<p className='copyright py-8'>
-						&copy;carepulse {new Date().getFullYear()}
-					</p>
+					<PatientForm user={user}/>
+					<div className='flex justify-between text-14-regular items-center mt-8'>
+						<p className='copyright'>
+							&copy;carepulse {new Date().getFullYear()}
+						</p>
+						<Link href={'/?admin=true'} className='text-green-500'>
+							Admin
+						</Link>
+					</div>
 				</section>
 			</div>
 			<Image
