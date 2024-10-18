@@ -11,12 +11,6 @@ export async function middleware(request: NextRequest) {
     ) {
         return Response.redirect(new URL('/login', request.url))
     }
-
-    if (
-        user &&
-        (request.nextUrl.pathname.startsWith('/login') ||
-            request.nextUrl.pathname === '/')
-    ) return Response.redirect(new URL(`/patients/${user.$id}/new-appointment`, request.url))
 }
 
 export const config = {
