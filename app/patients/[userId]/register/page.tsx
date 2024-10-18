@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {redirect} from "next/navigation";
 
 const Register = async ({ params: { userId } }: SearchParamProps) => {
-	const patient = await getPatientByUserId(userId)
+	const {patient} = await getPatientByUserId(userId)
 
 	if(patient) return redirect(`/patients/${userId}/new-appointment`)
 
