@@ -5,6 +5,8 @@ import {NoPatientDetailsAlert} from "@/components/no-patient-details-alert";
 import Link from "next/link";
 import PasskeyModal from "@/components/PasskeyModal";
 
+export const revalidate = 0
+
 const NewAppointment = async ({ searchParams, params: { userId } }: SearchParamProps) => {
 	const isAdmin = searchParams.admin === 'true'
 	const { patient } = await getPatientByUserId(userId)
